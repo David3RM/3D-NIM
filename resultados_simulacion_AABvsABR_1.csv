@@ -1,5 +1,0 @@
-,Jugador 1,Victorias 1,Jugador 2,Victorias 2,Profundidad 1,Profundidad 2,Ramificación máxima 1,Ramificación máxima 2,N.º Partidas,Tamaño del Tablero,Tiempo total,Tiempo medio por partida,Tiempo medio para mover 1,Tiempo medio para mover 2
-0,Agente Basado en Reglas,"(0, '0.0%')",Agente Alfa-Beta,"(1, '100.0%')",0,2,0,3,1,2,0.009999513626098633,0.009999513626098633,0.0,0.0033331712086995444
-1,Agente Alfa-Beta,"(1, '100.0%')",Agente Basado en Reglas,"(0, '0.0%')",2,0,5,0,1,2,0.017000675201416016,0.017000675201416016,0.004000067710876465,0.00033346811930338543
-2,Agente Basado en Reglas,"(1, '100.0%')",Agente Alfa-Beta,"(0, '0.0%')",0,2,0,14,1,3,0.8060016632080078,0.8060016632080078,0.0,0.1006251871585846
-3,Agente Alfa-Beta,"(1, '100.0%')",Agente Basado en Reglas,"(0, '0.0%')",2,0,17,0,1,3,0.9350016117095947,0.9350016117095947,0.10388906796773274,0.0

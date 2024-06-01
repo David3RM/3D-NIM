@@ -71,6 +71,7 @@ class Nim_3D(ShowBase):
     def updateCamera(self, task):
         dt = self.clock.getDt()
         if self.cameraMove:
+            # Estamos moviendo la camara con nuestro ratón
             md = self.win.getPointer(0)
             mouseX = md.getX()
             mouseY = md.getY()
@@ -95,9 +96,10 @@ class Nim_3D(ShowBase):
             self.lastMouseX = mouseX
             self.lastMouseY = mouseY
         else:
+            # Hemos dejado de mover nuestra camara con el ratón
             self.camera.setPos(self.size/2-0.5,self.size/2-0.5,self.size/2-0.5)
-            # Permite al jugador mover la camara libremente mientras esta escogiendo que piezas eliminar, una vez que ha elegido la primera pieza
-            # Una vez que haya eliminado las piezas se vuelve a poner la restricción de visibilidad.
+            # El jugador tiene libertad de movimiento completa, si ha elegido una pieza para realizar su movimiento.
+            # Si no ha seleccionado todavía ninguna pieza para empezar a realizar su movimiento se introduce la restriccion de movimiento de la camara
             if self.notmoving:
                 h,p,_ = self.camera.getHpr()
                 h = round(h/90)*90
@@ -208,7 +210,7 @@ class Nim_3D(ShowBase):
         return cubos_tablero
 
 tablero = Tablero_3Dimensiones(3,1,None)
-agentes = [AgenteAleatorio(tablero,None),AgenteBasadoEnReglas(tablero),AgenteAlfaBeta(tablero,3)]
+agentes = [AgenteAleatorio(tablero,None),AgenteBasadoEnReglas(tablero),AgenteAlfaBeta(tablero,2)]
 
 # Argumentos (Turno del jugador humano, el tablero, el adversario (puede ser None) )
 app = Nim_3D(0, tablero, agentes[2])

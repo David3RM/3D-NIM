@@ -307,7 +307,7 @@ class Tablero_3Dimensiones():
         x1,y1,z1 = coord1
         x2,y2,z2 = coord2
         # Comprobamos si las piezas elegidas estan en la misma fila o en la misma columna, impidiendo que escojan diagonales.
-        # También comprobamos si en las coordenadas elegidas hay piezas, es decir, las coordenadas no estan vacías.
+        # También comprobamos si en la coordenada elegida es valida y la segunda coordenada tiene pieza
         return (x1==x2)+(y1==y2)+(z1==z2) == 2 and self.coordenadaEsValida(coord1) and self.coordenadaTienePieza(coord2)
     
     def coordenadaEsValida(self,coord):

@@ -58,15 +58,29 @@ class AgenteBasadoEnReglas(Agente):
         # Vamos a elegir si comprobamos la filasX, filasY o columnas,
         comprobando = None
         eje = None
-        if len(self.tablero.filasX) <= len(self.tablero.filasY) and len(self.tablero.filasX) <= len(self.tablero.columnas):
+        # Elegimos el eje que menos filas completas tenga.
+        if len(self.tablero.filasX) < len(self.tablero.filasY) and len(self.tablero.filasX) < len(self.tablero.columnas):
             comprobando = self.tablero.filasX
             eje = "X"
-        elif len(self.tablero.filasY) <= len(self.tablero.filasX) and len(self.tablero.filasY) <= len(self.tablero.columnas):
+        elif len(self.tablero.filasY) < len(self.tablero.filasX) and len(self.tablero.filasY) < len(self.tablero.columnas):
             comprobando = self.tablero.filasY
             eje = "Y"
-        else:
+        elif len(self.tablero.columnas) < len(self.tablero.filasX) and len(self.tablero.columnas) < len(self.tablero.filasY):
             comprobando = self.tablero.columnas
             eje = "Z"
+        else:
+            # Elegimos un eje aleatorio, ya que todos tienen el mismo número de filas.
+            probability = random.random()
+            probability_division = 1/3
+            if probability<=probability_division:
+                comprobando = self.tablero.filasX
+                eje = "X"
+            elif probability>probability_division and probability<=probability_division*2:
+                comprobando = self.tablero.filasY
+                eje = "Y"
+            else:
+                comprobando = self.tablero.columnas
+                eje = "Z"
         # Una vez elegido lo que vamos a comprobar realizamos las reglas. Se comprobaran filas o columnas segun lo que se haya elegido.
         # Si hay un número impar de filas/columnas, borramos una entera para dejar un número par priorizando la que este pegada a las otras columnas
         if len(comprobando)%2==1:
@@ -161,6 +175,7 @@ class ArbolAlfaBeta():
         self.accion = None
         self.pasos = p
         self.hijos = []
+        # self.estadosgenerados = 1
         # Set que utilizaremos para comprobar rápidamente si un estado equivalente ya ha sido comprobado.
         self.estadosrepetidos=set()
         if self.turnoAgente==self.estado.turno:
@@ -197,8 +212,11 @@ class ArbolAlfaBeta():
                 for j in range(self.estado.size):
                     for k in range(self.estado.size):
                         if self.estado.coordenadaEsValida([i,j,k]):
-                            # Las coordenadas accesibles se invierten para que se generen antes los hijos que eliminan la mayor cantidad de columnas/filas
-                            for coord in self.estado.coordenadasAccesibles([i,j,k]):
+                            # Se barajea los movimientos de forma aleatoria para permitir a alfa beta realizar diferentes movimientos que considera equivalentes.
+                            # Incluso ayudandonos a conseguir la reducción de complejidad más fácilmente.
+                            movimientos = self.estado.coordenadasAccesibles([i,j,k])
+                            # random.shuffle(movimientos)
+                            for coord in movimientos:
                                 nuevo_tablero = copy.deepcopy(self.estado)
                                 nuevo_hijo = ArbolAlfaBeta(nuevo_tablero,self.pasos-1,self.turnoAgente)
                                 nuevo_hijo.alfabeta=self.alfabeta
@@ -207,6 +225,7 @@ class ArbolAlfaBeta():
                                 if not self.repetido(nuevo_hijo):
                                     self.hijos.append(nuevo_hijo)
                                     nuevo_hijo.generarHijos()
+                                    # self.estadosgenerados += nuevo_hijo.estadosgenerados
                                     if self.estado.turno==self.turnoAgente:
                                         self.valor = max(self.valor, nuevo_hijo.valor)
                                         self.alfabeta[0] = max(self.alfabeta[0], self.valor)
@@ -235,3 +254,9 @@ class ArbolAlfaBeta():
                 self.valor = self.funcionEvaluacion()
             else:
                 self.valor = -self.funcionEvaluacion()
+
+# Prueba para comprobar cuantos estados hay en el espacio de busqueda completo en un tablero 2x2x2
+# tablero = Tablero_3Dimensiones(2,1,None)
+# arbol = ArbolAlfaBeta(tablero,100000000000000000000000000,0)
+# arbol.generarHijos()
+# print(arbol.estadosgenerados)

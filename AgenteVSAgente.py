@@ -21,17 +21,9 @@ class AgenteVSAgente():
                 for j in range(i+1,len(Agentes)):
                     Agente2 = Agentes[j]
                     Agente2 = self.PrepararAgente(Agente2,tablero,profundidad)
-                    if type(Agente1) is AgenteAleatorio or type(Agente2) is AgenteAleatorio:
-                        self.SimularNPartidas(n,tablero,Agente1,Agente2)
-                        # Simulamos los partidas pero los agentes cambian de turno, para observar si el turno ofrece alguna ventaja.
-                        self.SimularNPartidas(n,tablero,Agente2,Agente1)
-                    elif type(Agente1)==type(Agente2):
-                        # No cambiaremos de turno, ya que ambos agentes se comportan igual y podemos ver que turno ofrece la ventaja.
-                        self.SimularNPartidas(1,tablero,Agente1,Agente2)
-                    else:
-                        # Solo realizamos varias simulaciones si uno de los agentes es aleatorio, o no realiza siempre los mismos movimientos.
-                        self.SimularNPartidas(1,tablero,Agente1,Agente2)
-                        self.SimularNPartidas(1,tablero,Agente2,Agente1)
+                    self.SimularNPartidas(n,tablero,Agente1,Agente2)
+                    # Simulamos los partidas pero los agentes cambian de turno, para observar si el turno ofrece alguna ventaja.
+                    self.SimularNPartidas(n,tablero,Agente2,Agente1)
 
         resultados = pd.DataFrame(self.dictionary)
         if self.guardarResultados:
@@ -151,7 +143,7 @@ class AgenteVSAgente():
         self.dictionary["Tiempo medio para mover 2"].append(A2_movetime_avg)
         print("\n")
 
-lista_agentes = [AgenteAlfaBeta,AgenteAlfaBeta] # Lista de agentes disponibles
+lista_agentes = [AgenteBasadoEnReglas,AgenteAlfaBeta] # Lista de agentes disponibles
 tableros = [Tablero_3Dimensiones(2,1,None),Tablero_3Dimensiones(3,1,None)]# Lista de tableros que queremos probar
 profundidad = 3
 semilla = 10
