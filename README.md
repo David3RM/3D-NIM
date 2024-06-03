@@ -8,4 +8,7 @@ La ejecución del fichero "AgenteVSAgente.py" permite la simulación de partidas
 
 1. Por defecto, en el programa predefinido, el almacenamiento de los resultados en el fichero está desactivado. Para activarlo hay que cambiar el parametro "guardarResultados" a "true".
 
-Los diferentes archivos .csv presentes en este repositorio contienen los resultados de los experimentos realizados en el proyecto. Sus nombres indican el tipo de agentes que se enfrentan en los resultados.
+Los diferentes archivos .csv presentes en este repositorio contienen los resultados de los experimentos realizados en el proyecto. Sus nombres indican el tipo de agentes que se enfrentan en los resultados:
+- AA = Agente Aleatorio
+- ABR = Agente Basado en Reglas
+- AAB = Agente Alfa-Beta
