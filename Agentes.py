@@ -152,18 +152,18 @@ class AgenteAlfaBeta(Agente):
         turnoAgente = self.tablero.turno
         self.arbol = ArbolAlfaBeta(self.tablero,self.profundidad,turnoAgente)
         self.arbol.generarHijos()
-        mejoraccion = None
-        mejorvalor = -float("inf")
+        mejor_accion = None
+        mejor_valor = -float("inf")
         # La raíz del arbol siempre tendra la mayor cantidad de hijos, asi que siempre sera el que realice la ramificación máxima.
         if len(self.arbol.hijos)>self.ramifiacionmax:
             self.ramifiacionmax = len(self.arbol.hijos)
         for hijo in self.arbol.hijos:
-            if mejorvalor<hijo.valor:
-                mejorvalor = hijo.valor
-                mejoraccion = hijo.accion
-        if mejoraccion==None:
-            mejoraccion = self.arbol.hijos[0].accion
-        coords_eliminadas = self.tablero.tomarPiezas(mejoraccion[0],mejoraccion[1])
+            if mejor_valor<hijo.valor:
+                mejor_valor = hijo.valor
+                mejor_accion = hijo.accion
+        if mejor_accion==None:
+            mejor_accion = self.arbol.hijos[0].accion
+        coords_eliminadas = self.tablero.tomarPiezas(mejor_accion[0],mejor_accion[1])
         return coords_eliminadas
 
 # Clase que utilizaremos para representar un árbol
@@ -177,7 +177,7 @@ class ArbolAlfaBeta():
         self.hijos = []
         # self.estadosgenerados = 1
         # Set que utilizaremos para comprobar rápidamente si un estado equivalente ya ha sido comprobado.
-        self.estadosrepetidos=set()
+        self.estados_repetidos=set()
         if self.turnoAgente==self.estado.turno:
             self.valor = float("inf")
         else:
@@ -187,7 +187,7 @@ class ArbolAlfaBeta():
     # Evalua el estado del arbol actual.
     def funcionEvaluacion(self):
         movimientosMin = min(len(self.estado.filasX),len(self.estado.filasY),len(self.estado.columnas))
-        movimientosMax = max(len(self.estado.filasX),len(self.estado.filasY),len(self.estado.columnas))
+        movimientosMax = np.sum(self.estado.piezas)
         valormax = 1000/movimientosMax
         if movimientosMin%2==1:
             valor = valormax
@@ -200,10 +200,10 @@ class ArbolAlfaBeta():
         repetido = False
         lista = (len(arbol.estado.filasX),len(arbol.estado.filasY), len(arbol.estado.columnas))
         for permutacion in set(itertools.permutations(lista)):
-            if permutacion in self.estadosrepetidos:
+            if permutacion in self.estados_repetidos:
                 repetido=True
             else:
-                self.estadosrepetidos.add(permutacion)
+                self.estados_repetidos.add(permutacion)
         return repetido
 
     def generarHijos(self):
@@ -237,7 +237,7 @@ class ArbolAlfaBeta():
                                         if self.alfabeta[0]>=self.alfabeta[1]:
                                             break
             #El set ya ha sido utilizado completamente, no es necesario tenerlo en memoria
-            self.estadosrepetidos=None
+            self.estados_repetidos=None
 
         # Damos valor al nodo, ya que es un nodo hoja.
         elif self.estado.finPartida():

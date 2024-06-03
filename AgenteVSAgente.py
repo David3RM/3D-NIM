@@ -36,15 +36,15 @@ class AgenteVSAgente():
             print("\tTamaño del tablero: "+str(row["Tamaño del Tablero"])+" ("+str(row["Tamaño del Tablero"])+"x"+str(row["Tamaño del Tablero"])+"x"+str(row["Tamaño del Tablero"])+")" )
             print("\tNº de partidas simuladas: "+str(row["N.º Partidas"]))
             print("\t"+row["Jugador 1"]+" VS "+row["Jugador 2"]+" --> "+row["Jugador 1"]+str(row["Victorias 1"])+" "+row["Jugador 2"]+str(row["Victorias 2"]))
-            print("\tTiempo total de la simulación: "+str(row["Tiempo total"]))
-            print("\tTiempo medio de una partida: "+str(row["Tiempo medio por partida"]))
+            print("\tTiempo total de la simulación: "+str(round(row["Tiempo total"],6))+ " segundos")
+            print("\tTiempo medio de una partida: "+str(round(row["Tiempo medio por partida"],6))+ " segundos")
             print("\t---------------------"+row["Jugador 1"]+"---------------------")
-            print("\tTiempo medio para mover: "+str(row["Tiempo medio para mover 1"])+" segundos")
+            print("\tTiempo medio para mover: "+str(round(row["Tiempo medio para mover 1"],6))+ " segundos")
             if row["Profundidad 1"]>0:
                 print("\tProfundidad de búsqueda: "+str(row["Profundidad 1"]))
                 print("\tRamificación máxima: "+str(row["Ramificación máxima 1"]))
             print("\t---------------------"+row["Jugador 2"]+"---------------------")
-            print("\tTiempo medio para mover: "+str(row["Tiempo medio para mover 2"])+" segundos")
+            print("\tTiempo medio para mover: "+str(round(row["Tiempo medio para mover 2"],6))+ " segundos")
             if row["Profundidad 2"]>0:
                 print("\tProfundidad de búsqueda: "+str(row["Profundidad 2"]))
                 print("\tRamificación máxima: "+str(row["Ramificación máxima 2"]))
@@ -143,9 +143,9 @@ class AgenteVSAgente():
         self.dictionary["Tiempo medio para mover 2"].append(A2_movetime_avg)
         print("\n")
 
-lista_agentes = [AgenteBasadoEnReglas,AgenteAlfaBeta] # Lista de agentes disponibles
+lista_agentes = [AgenteAleatorio,AgenteAlfaBeta] # Lista de agentes disponibles
 tableros = [Tablero_3Dimensiones(2,1,None),Tablero_3Dimensiones(3,1,None)]# Lista de tableros que queremos probar
-profundidad = 3
+profundidad = 2
 semilla = 10
 num_simulaciones = 200
 # Argumentos: semilla, nº simulaciones, lista tableros, lista agentes, guardar resultados
