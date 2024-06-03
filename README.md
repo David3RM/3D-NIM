@@ -1,6 +1,6 @@
 # Diseño de estrategias basadas en inteligencia artificial para jugar a 3D-Nim.
 
-Para usar la interfaz gráfica se ejecuta el fichero "InterfazGrafica.py", si se desea cambiar el tipo de agente del adversario hay que modificar la línea 216 y pasar el tipo de adversario deseado. Si se desea cambiar el tamaño del tablero hay que modificar la línea 212.
+Para usar la interfaz gráfica se ejecuta el fichero "InterfazGrafica.py". Si se desea cambiar el tipo de agente del adversario hay que modificar la línea 216 y pasar el tipo de adversario deseado. Si se desea cambiar el tamaño del tablero hay que modificar la línea 212.
 
 Para modificar la profundidad de os agentes AlphaBeta, solo hace falta con modificar los parámetros que se pasan a su constructor.
 
