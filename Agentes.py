@@ -26,30 +26,27 @@ class AgenteAleatorio(Agente):
     # Es necesario poner una semilla al agente aleatorio para que se puedan reproducir sus movimientos.
     def __init__(self, tablero: Tablero_3Dimensiones, seed):
         self.tablero = tablero
-        self.seed = seed
+        self.randomstate = random.Random(seed)
 
     def nombre(self):
         return "Agente Aleatorio"
 
     def realizarMovimiento(self):
-        random.seed(self.seed)
-        coord_aleatoria = [random.randint(0,self.tablero.size-1),random.randint(0,self.tablero.size-1),random.randint(0,self.tablero.size-1)]
+        coord_aleatoria = [self.randomstate.randint(0,self.tablero.size-1),self.randomstate.randint(0,self.tablero.size-1),self.randomstate.randint(0,self.tablero.size-1)]
         # Impedimos que eliga una coordenada que no tiene pieza
         while not self.tablero.coordenadaEsValida(coord_aleatoria):
-            coord_aleatoria = [random.randint(0,self.tablero.size-1),random.randint(0,self.tablero.size-1),random.randint(0,self.tablero.size-1)]
+            coord_aleatoria = [self.randomstate.randint(0,self.tablero.size-1),self.randomstate.randint(0,self.tablero.size-1),self.randomstate.randint(0,self.tablero.size-1)]
         coords_a_elegir = self.tablero.coordenadasAccesibles(coord_aleatoria)
         # No comprobamos si la coordenada_2, elegida aleatoriamente, tiene pieza o cumple las condiciones, ya que las coordenadas devueltas en "coords_a_elegir" tienen piezas y son validas
-        coord_elegida = coords_a_elegir[random.randint(0,len(coords_a_elegir)-1)]
-        # Permitimos que los movimientos del agente aleatorio sean reproducibles pero distintos en cada iteración.
-        if self.seed:
-            self.seed += 1
+        coord_elegida = coords_a_elegir[self.randomstate.randint(0,len(coords_a_elegir)-1)]
         coords_eliminadas = self.tablero.tomarPiezas(coord_aleatoria,coord_elegida)
         return coords_eliminadas
     
 class AgenteBasadoEnReglas(Agente):
 
-    def __init__(self, tablero: Tablero_3Dimensiones):
+    def __init__(self, tablero: Tablero_3Dimensiones, seed):
         self.tablero = tablero
+        self.randomstate = random.Random(seed)
 
     def nombre(self):
         return "Agente Basado en Reglas"
@@ -70,7 +67,7 @@ class AgenteBasadoEnReglas(Agente):
             eje = "Z"
         else:
             # Elegimos un eje aleatorio, ya que todos tienen el mismo número de filas.
-            probability = random.random()
+            probability = self.randomstate.random()
             probability_division = 1/3
             if probability<=probability_division:
                 comprobando = self.tablero.filasX
@@ -139,10 +136,11 @@ class AgenteBasadoEnReglas(Agente):
     
 class AgenteAlfaBeta(Agente):
 
-    def __init__(self, tablero: Tablero_3Dimensiones, p):
+    def __init__(self, tablero: Tablero_3Dimensiones, semilla, p):
         self.tablero = tablero
         self.profundidad = p
         self.arbol = None
+        self.randomstate = random.Random(semilla)
         self.ramifiacionmax = 0
 
     def nombre(self):
@@ -150,7 +148,7 @@ class AgenteAlfaBeta(Agente):
     
     def realizarMovimiento(self):
         turnoAgente = self.tablero.turno
-        self.arbol = ArbolAlfaBeta(self.tablero,self.profundidad,turnoAgente)
+        self.arbol = ArbolAlfaBeta(self.tablero,self.profundidad,turnoAgente,self.randomstate)
         self.arbol.generarHijos()
         mejor_accion = None
         mejor_valor = -float("inf")
@@ -169,9 +167,10 @@ class AgenteAlfaBeta(Agente):
 # Clase que utilizaremos para representar un árbol
 class ArbolAlfaBeta():
 
-    def __init__(self, tablero: Tablero_3Dimensiones, p, turnoAgente):
+    def __init__(self, tablero: Tablero_3Dimensiones, p, turnoAgente,randomstate):
         self.estado = tablero
         self.turnoAgente = turnoAgente
+        self.randomstate = randomstate
         self.accion = None
         self.pasos = p
         self.hijos = []
@@ -189,7 +188,7 @@ class ArbolAlfaBeta():
         movimientosMin = min(len(self.estado.filasX),len(self.estado.filasY),len(self.estado.columnas))
         movimientosMax = np.sum(self.estado.piezas)
         valormax = 1000/movimientosMax
-        if movimientosMin%2==1:
+        if movimientosMin%2==0 and movimientosMax%2==0:
             valor = valormax
         else:
             valor = -valormax
@@ -205,6 +204,13 @@ class ArbolAlfaBeta():
             else:
                 self.estados_repetidos.add(permutacion)
         return repetido
+    
+    def ordenacionMovimientos(self, coord1, coord2):
+        diferenciacoords = [coord1[0]-coord2[0],coord1[1]-coord2[1],coord1[2]-coord2[2]]
+        piezas_a_elimnar = 1+abs(sum(diferenciacoords))
+        # Añadimos aleatoriedad para permitir que movimientos que eliminan el mismo número de piezas sean seleccionados y no siempre se realice la misma ordenación.
+        # Devolvemos el numero de piezas que eliman dicho movimiento
+        return piezas_a_elimnar+self.randomstate.random()*0.5
 
     def generarHijos(self):
         if not self.estado.finPartida() and self.pasos>0:
@@ -215,10 +221,11 @@ class ArbolAlfaBeta():
                             # Se barajea los movimientos de forma aleatoria para permitir a alfa beta realizar diferentes movimientos que considera equivalentes.
                             # Incluso ayudandonos a conseguir la reducción de complejidad más fácilmente.
                             movimientos = self.estado.coordenadasAccesibles([i,j,k])
-                            # random.shuffle(movimientos)
+                            # Lo ordenamos de forma que los primeros movimientos sean los que más piezas eliminan, ya que permiten a alfa conseguir valores superiores rapidamente permitiendo realizar la poda antes.
+                            movimientos.sort(key=lambda movimiento: self.ordenacionMovimientos([i,j,k],movimiento),reverse=True)
                             for coord in movimientos:
                                 nuevo_tablero = copy.deepcopy(self.estado)
-                                nuevo_hijo = ArbolAlfaBeta(nuevo_tablero,self.pasos-1,self.turnoAgente)
+                                nuevo_hijo = ArbolAlfaBeta(nuevo_tablero,self.pasos-1,self.turnoAgente,self.randomstate)
                                 nuevo_hijo.alfabeta=self.alfabeta
                                 nuevo_hijo.estado.tomarPiezas([i,j,k],coord)
                                 nuevo_hijo.accion = ([i,j,k],coord)
@@ -249,14 +256,15 @@ class ArbolAlfaBeta():
                 self.valor = -valor
         # Estimamos el valor del estado, ya que no es un nodo hoja, pero se ha alcanzado la profundidad máxima.
         else:
-            # Si es mi turno y el tablero esta en una posición deseada, la valoración de la función es positiva
-            if self.estado.turno==self.turnoAgente:
+            # Si es mi movimiento dejo el tablero en una posición desfavorable para el adversario, la valoración de la función es positiva
+            if self.estado.turno!=self.turnoAgente:
                 self.valor = self.funcionEvaluacion()
             else:
                 self.valor = -self.funcionEvaluacion()
 
 # Prueba para comprobar cuantos estados hay en el espacio de busqueda completo en un tablero 2x2x2
+# Antes de ejecutarlo hay que eliminar la poda y la comprobación de estados equivalentes.
 # tablero = Tablero_3Dimensiones(2,1,None)
-# arbol = ArbolAlfaBeta(tablero,100000000000000000000000000,0)
+# arbol = ArbolAlfaBeta(tablero,100000000000000000000000000,0,random.Random())
 # arbol.generarHijos()
-# print(arbol.estadosgenerados)
+# print(len(arbol.hijos))

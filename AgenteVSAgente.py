@@ -17,10 +17,10 @@ class AgenteVSAgente():
         for tablero in tableros:
             for i in range(len(Agentes)-1):
                 Agente1 = Agentes[i]
-                Agente1 = self.PrepararAgente(Agente1,tablero,profundidad)
+                Agente1 = self.PrepararAgente(Agente1,tablero,profundidad,semilla)
                 for j in range(i+1,len(Agentes)):
                     Agente2 = Agentes[j]
-                    Agente2 = self.PrepararAgente(Agente2,tablero,profundidad)
+                    Agente2 = self.PrepararAgente(Agente2,tablero,profundidad,semilla)
                     self.SimularNPartidas(n,tablero,Agente1,Agente2)
                     # Simulamos los partidas pero los agentes cambian de turno, para observar si el turno ofrece alguna ventaja.
                     self.SimularNPartidas(n,tablero,Agente2,Agente1)
@@ -51,13 +51,13 @@ class AgenteVSAgente():
             print("\n")
 
     # Prepara los argumentos de los agentes especificados con los parametros indicados.
-    def PrepararAgente(self,Agente: Agente,tablero: Tablero_3Dimensiones, profundidad):
+    def PrepararAgente(self,Agente: Agente,tablero: Tablero_3Dimensiones, profundidad,semilla):
         if Agente is AgenteAleatorio:
-            Agente = Agente(tablero,tablero.seed)
+            Agente = Agente(tablero,semilla)
         elif Agente is AgenteAlfaBeta:
-            Agente = Agente(tablero,profundidad)
+            Agente = Agente(tablero,semilla,profundidad)
         else:
-            Agente = Agente(tablero)
+            Agente = Agente(tablero,semilla)
         return Agente
 
     # Se encarga de simular varias partidas entre los agentes especificados en un tablero dado.
@@ -143,10 +143,10 @@ class AgenteVSAgente():
         self.dictionary["Tiempo medio para mover 2"].append(A2_movetime_avg)
         print("\n")
 
-lista_agentes = [AgenteAleatorio,AgenteAlfaBeta] # Lista de agentes disponibles
-tableros = [Tablero_3Dimensiones(2,1,None),Tablero_3Dimensiones(3,1,None)]# Lista de tableros que queremos probar
-profundidad = 2
 semilla = 10
+profundidad = 2
 num_simulaciones = 200
+lista_agentes = [AgenteAleatorio,AgenteAlfaBeta] # Lista de agentes disponibles
+tableros = [Tablero_3Dimensiones(2,1,semilla),Tablero_3Dimensiones(3,1,semilla)]# Lista de tableros que queremos probar
 # Argumentos: semilla, nº simulaciones, lista tableros, lista agentes, guardar resultados
 AgenteVSAgente(semilla, num_simulaciones, tableros, profundidad, lista_agentes, True)

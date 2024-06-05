@@ -8,16 +8,17 @@ class Tablero_3Dimensiones():
         self.turno = 0 # Turno 0 corresponde al jugador 1 y el turno 1 al jugador 2.
         self.size = m # Tamaño del tablero
         self.seed = seed # semilla para el random
+        self.random = random.Random(seed)
         self.p = p # Porcentaje de piezas
         self.dict_coords = dict()
         # Construimos el tablero/cubo con todas las piezas o con solo un porcentaje de ellas.
-        if self.seed: random.seed(self.seed)
+        if self.seed: self.random.seed(self.seed)
         if self.p<1:
             self.piezas = np.zeros((self.size,self.size,self.size))
             for i in range(self.size):
                 for j in range(self.size):
                     for k in range(self.size):
-                        if random.random()<=self.p:
+                        if self.random.random()<=self.p:
                             self.piezas[i,j,k] = 1
         else:
             self.piezas = np.ones((self.size,self.size,self.size))
@@ -28,13 +29,14 @@ class Tablero_3Dimensiones():
     def restaurarTablero(self):
         self.turno = 0
         self.dict_coords = dict()
-        if self.seed: random.seed(self.seed)
+        self.random = random.Random(self.seed)
+        if self.seed: self.random.seed(self.seed)
         if self.p<1:
             self.piezas = np.zeros((self.size,self.size,self.size))
             for i in range(self.size):
                 for j in range(self.size):
                     for k in range(self.size):
-                        if random.random()<=self.p:
+                        if self.random.random()<=self.p:
                             self.piezas[i,j,k] = 1
         else:
             self.piezas = np.ones((self.size,self.size,self.size))
