@@ -158,7 +158,7 @@ class Tablero_3Dimensiones():
                 compartidas+=self.piezas[i,j,k-1]
             if k+1<self.size:
                 compartidas+=self.piezas[i,j,k+1]
-        return (compartidas,len(filaX))
+        return (compartidas,len(filaX),self.random.random())
 
     def priorizarfilaY(self,filaY):
         compartidas = 0
@@ -172,7 +172,7 @@ class Tablero_3Dimensiones():
                 compartidas+=self.piezas[i,j,k-1]
             if k+1<self.size:
                 compartidas+=self.piezas[i,j,k+1]
-        return (compartidas,len(filaY))
+        return (compartidas,len(filaY),self.random.random())
 
     def priorizarcolumna(self,columna):
         compartidas = 0
@@ -186,16 +186,15 @@ class Tablero_3Dimensiones():
                 compartidas+=self.piezas[i,j-1,k]
             if j+1<self.size:
                 compartidas+=self.piezas[i,j+1,k]
-        return (compartidas,len(columna))
+        return (compartidas,len(columna),self.random.random())
         
 
     #Cambia el turno, es decir, el jugador que esta cogiendo piezas en el momento.
     def cambiarTurno(self):
-        if not self.finPartida():
-            if self.turno==0:
-                self.turno=1
-            else:
-                self.turno=0
+        if self.turno==0:
+            self.turno=1
+        else:
+            self.turno=0
 
     # Devuelve las coordenas que se han eliminado con el movimiento.
     def tomarPiezas(self,coord1,coord2):

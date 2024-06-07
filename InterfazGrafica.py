@@ -209,9 +209,10 @@ class Nim_3D(ShowBase):
                         cubos_tablero[i,j,k] = tuple()
         return cubos_tablero
 
-tablero = Tablero_3Dimensiones(3,1,None)
-agentes = [AgenteAleatorio(tablero,None),AgenteBasadoEnReglas(tablero),AgenteAlfaBeta(tablero,2)]
+semilla = None
+tablero = Tablero_3Dimensiones(3,1,semilla)
+agentes = [AgenteAleatorio(tablero,semilla),AgenteBasadoEnReglas(tablero,semilla),AgenteAlfaBeta(tablero,semilla,2)]
 
 # Argumentos (Turno del jugador humano, el tablero, el adversario (puede ser None) )
-app = Nim_3D(0, tablero, agentes[2])
+app = Nim_3D(0, tablero, agentes[1])
 app.run()

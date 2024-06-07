@@ -141,7 +141,7 @@ class AgenteAlfaBeta(Agente):
         self.profundidad = p
         self.arbol = None
         self.randomstate = random.Random(semilla)
-        self.ramifiacionmax = 0
+        self.ramificacionmax = 0
 
     def nombre(self):
         return "Agente Alfa-Beta"
@@ -153,8 +153,7 @@ class AgenteAlfaBeta(Agente):
         mejor_accion = None
         mejor_valor = -float("inf")
         # La raíz del arbol siempre tendra la mayor cantidad de hijos, asi que siempre sera el que realice la ramificación máxima.
-        if len(self.arbol.hijos)>self.ramifiacionmax:
-            self.ramifiacionmax = len(self.arbol.hijos)
+        self.ramificacionmax = max(self.ramificacionmax,self.arbol.ramificacionmax)
         for hijo in self.arbol.hijos:
             if mejor_valor<hijo.valor:
                 mejor_valor = hijo.valor
@@ -174,7 +173,8 @@ class ArbolAlfaBeta():
         self.accion = None
         self.pasos = p
         self.hijos = []
-        # self.estadosgenerados = 1
+        self.ramificacionmax = 0
+        self.estadosgenerados = 1
         # Set que utilizaremos para comprobar rápidamente si un estado equivalente ya ha sido comprobado.
         self.estados_repetidos=set()
         if self.turnoAgente==self.estado.turno:
@@ -185,10 +185,21 @@ class ArbolAlfaBeta():
     
     # Evalua el estado del arbol actual.
     def funcionEvaluacion(self):
-        movimientosMin = min(len(self.estado.filasX),len(self.estado.filasY),len(self.estado.columnas))
-        movimientosMax = np.sum(self.estado.piezas)
-        valormax = 1000/movimientosMax
-        if movimientosMin%2==0 and movimientosMax%2==0:
+        movimientosMax=0
+        if len(self.estado.filasX)<=len(self.estado.filasY) and len(self.estado.filasX)<=len(self.estado.columnas):
+            movimientosMin = len(self.estado.filasX)
+            for element in self.estado.filasX:
+                movimientosMax = max(movimientosMax,len(element))
+        elif len(self.estado.filasY)<=len(self.estado.filasX) and len(self.estado.filasY)<=len(self.estado.columnas):
+            movimientosMin = len(self.estado.filasY)
+            for element in self.estado.filasX:
+                movimientosMax = max(movimientosMax,len(element))
+        else:
+            movimientosMin = len(self.estado.columnas)
+            for element in self.estado.filasX:
+                movimientosMax = max(movimientosMax,len(element))
+        valormax = 1000/np.sum(self.estado.piezas)
+        if movimientosMin%2==0 and movimientosMax<=2 and np.sum(self.estado.piezas)%2==0:
             valor = valormax
         else:
             valor = -valormax
@@ -199,7 +210,7 @@ class ArbolAlfaBeta():
         repetido = False
         lista = (len(arbol.estado.filasX),len(arbol.estado.filasY), len(arbol.estado.columnas))
         for permutacion in set(itertools.permutations(lista)):
-            if permutacion in self.estados_repetidos:
+            if permutacion in self.estados_repetidos and np.sum(self.estado.piezas)==np.sum(self.estado.piezas):
                 repetido=True
             else:
                 self.estados_repetidos.add(permutacion)
@@ -232,7 +243,8 @@ class ArbolAlfaBeta():
                                 if not self.repetido(nuevo_hijo):
                                     self.hijos.append(nuevo_hijo)
                                     nuevo_hijo.generarHijos()
-                                    # self.estadosgenerados += nuevo_hijo.estadosgenerados
+                                    self.ramificacionmax=max(len(self.hijos),nuevo_hijo.ramificacionmax)
+                                    self.estadosgenerados += nuevo_hijo.estadosgenerados
                                     if self.estado.turno==self.turnoAgente:
                                         self.valor = max(self.valor, nuevo_hijo.valor)
                                         self.alfabeta[0] = max(self.alfabeta[0], self.valor)
@@ -249,14 +261,14 @@ class ArbolAlfaBeta():
         # Damos valor al nodo, ya que es un nodo hoja.
         elif self.estado.finPartida():
             valor = float("inf")
-            # Si es mi turno cuando el tablero esta vacio, he ganado. Ya que cuando se coge la última pieza no se cambia de turno
-            if self.estado.turno==self.turnoAgente:
+            # Si mi movimiento dejo el tablero vacío damos un valor positivo
+            if self.estado.turno!=self.turnoAgente:
                 self.valor = valor
             else:
                 self.valor = -valor
         # Estimamos el valor del estado, ya que no es un nodo hoja, pero se ha alcanzado la profundidad máxima.
         else:
-            # Si es mi movimiento dejo el tablero en una posición desfavorable para el adversario, la valoración de la función es positiva
+            # Si mi movimiento dejo el tablero en una posición desfavorable para el adversario, la valoración de la función es positiva
             if self.estado.turno!=self.turnoAgente:
                 self.valor = self.funcionEvaluacion()
             else:
@@ -264,7 +276,7 @@ class ArbolAlfaBeta():
 
 # Prueba para comprobar cuantos estados hay en el espacio de busqueda completo en un tablero 2x2x2
 # Antes de ejecutarlo hay que eliminar la poda y la comprobación de estados equivalentes.
-# tablero = Tablero_3Dimensiones(2,1,None)
-# arbol = ArbolAlfaBeta(tablero,100000000000000000000000000,0,random.Random())
-# arbol.generarHijos()
-# print(len(arbol.hijos))
+tablero = Tablero_3Dimensiones(2,1,None)
+arbol = ArbolAlfaBeta(tablero,float("inf"),0,random.Random())
+arbol.generarHijos()
+print(arbol.estadosgenerados)

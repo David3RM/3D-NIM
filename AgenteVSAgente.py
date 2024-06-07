@@ -129,13 +129,13 @@ class AgenteVSAgente():
         self.dictionary["Victorias 2"].append((A2_win,A2_per))
         if type(Agente1) is AgenteAlfaBeta:
             self.dictionary["Profundidad 1"].append(Agente1.profundidad)
-            self.dictionary["Ramificación máxima 1"].append(Agente1.ramifiacionmax)
+            self.dictionary["Ramificación máxima 1"].append(Agente1.ramificacionmax)
         else:
             self.dictionary["Profundidad 1"].append(0)
             self.dictionary["Ramificación máxima 1"].append(0)
         if type(Agente2) is AgenteAlfaBeta:
             self.dictionary["Profundidad 2"].append(Agente2.profundidad)
-            self.dictionary["Ramificación máxima 2"].append(Agente2.ramifiacionmax)
+            self.dictionary["Ramificación máxima 2"].append(Agente2.ramificacionmax)
         else:
             self.dictionary["Profundidad 2"].append(0)
             self.dictionary["Ramificación máxima 2"].append(0)
