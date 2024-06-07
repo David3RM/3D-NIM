@@ -276,7 +276,7 @@ class ArbolAlfaBeta():
 
 # Prueba para comprobar cuantos estados hay en el espacio de busqueda completo en un tablero 2x2x2
 # Antes de ejecutarlo hay que eliminar la poda y la comprobación de estados equivalentes.
-tablero = Tablero_3Dimensiones(2,1,None)
-arbol = ArbolAlfaBeta(tablero,float("inf"),0,random.Random())
-arbol.generarHijos()
-print(arbol.estadosgenerados)
+# tablero = Tablero_3Dimensiones(2,1,None)
+# arbol = ArbolAlfaBeta(tablero,float("inf"),0,random.Random())
+# arbol.generarHijos()
+# print(arbol.estadosgenerados)
